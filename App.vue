@@ -3,7 +3,7 @@
 		onLaunch: function() {
 			if (this.globalData.envIndex === "dev") {
 				this.globalData.env = this.globalData.dev
-			}else{
+			} else {
 				this.globalData.env = this.globalData.prod
 			}
 		},

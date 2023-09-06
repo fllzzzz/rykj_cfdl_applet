@@ -31,7 +31,8 @@
 			dd.biz.navigation.setRight({
 				show: false, //控制按钮显示， true 显示， false 隐藏， 默认true
 			})
-			if (dd.env.platform == 'notInDingTalk') {
+			// if (dd.env.platform == 'notInDingTalk') {
+			if (0) {
 				uni.showToast({
 					title: "请在钉钉中打开！",
 					icon:'none',
