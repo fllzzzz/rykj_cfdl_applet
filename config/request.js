@@ -28,9 +28,9 @@ export default (url, method, params, flag) => {
 			success(res) {
 				resolve(res.data)
 				if (res.data.code === 401) {
-					uni.navigateTo({
-						url: "/pages/loading/loading"
-					})
+					// uni.navigateTo({ 重要
+					// 	url: "/pages/loading/loading"
+					// })
 					resolve(res.data)
 				} else {
 					resolve(res.data)

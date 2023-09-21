@@ -2,10 +2,12 @@
 	<view class="container">
 		<img @click="backToIndex" class="logoImg" src="../../static/cfmoto_logo1.svg" alt="">
 		<text class="logoTitle">春风顺风车</text>
+		
 	</view>
 </template>
 
 <script>
+	// import vConsole from '@/vconsole.js'
 	import * as dd from "dingtalk-jsapi";
 	import {
 		authenticate
@@ -27,10 +29,13 @@
 			}
 		},
 		onLoad: function(option) {
+			console.log("11111")
+			console.log(option)
 			this.orderId = option.orderId
 			dd.biz.navigation.setRight({
 				show: false, //控制按钮显示， true 显示， false 隐藏， 默认true
 			})
+			console.log(dd.env.platform,"dd.env.platform")
 			// if (dd.env.platform == 'notInDingTalk') {
 			if (0) {
 				uni.showToast({
@@ -44,9 +49,9 @@
 			// 	})
 			// } 
 			else {
+				console.log("进来了调用鉴权之前")
 				authenticate()
 				loginByCode(this.orderId)
-				
 			}
 
 		}

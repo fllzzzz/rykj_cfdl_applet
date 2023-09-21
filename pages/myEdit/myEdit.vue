@@ -34,6 +34,9 @@
 			<!-- <uni-forms-item label="居住地:">
 				<uni-easyinput maxlength="100" v-model="valiFormData.livePlace" placeholder="请输入内容"></uni-easyinput>
 			</uni-forms-item> -->
+			<uni-forms-item label="停车场:">
+				<uni-easyinput disabled maxlength="20" v-model="valiFormData.parkingLotRegion"></uni-easyinput>
+			</uni-forms-item>
 		</uni-forms>
 		<button class="submit-btn" type="primary" @click="userChangeProfile()">确认修改</button>
 	</view>
@@ -57,7 +60,8 @@
 					openId: "",
 					mobile: "",
 					plateNo: "",
-					livePlace: ""
+					livePlace: "",
+					parkingLotRegion:''
 				}
 				// valiFormData:uni.getStorageSync('user')
 			}

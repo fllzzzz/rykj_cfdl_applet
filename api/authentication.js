@@ -5,12 +5,15 @@ import {
 } from "@/api/user";
 
 const baseaAentId = getApp().globalData.env.agentId
+console.log("新版本")
 export const authenticate = () => {
 	getAuthInfo().then(res => {
 		if (res.code === 200) {
 			dd.config({
 				agentId: baseaAentId, // 必填，微应用ID
-				corpId: "dingb32dfe3fb37ee75c35c2f4657eb6378f", //必填，企业ID
+				// agentId: "2720211144", // 必填，微应用ID
+				// corpId: "dingb32dfe3fb37ee75c35c2f4657eb6378f", //必填，企业ID
+				corpId: "ding037640a7807d374ba39a90f97fcb1e09", //必填，企业ID 修改
 				timeStamp: res.data.timeStamp, // 必填，生成签名的时间戳
 				nonceStr: res.data.nonceStr, // 必填，生成签名的随机串
 				signature: res.data.signature, // 必填，签名

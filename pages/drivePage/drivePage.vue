@@ -1,6 +1,6 @@
 <template>
 	<view>
-		<banner></banner>
+		<!-- <banner></banner> -->
 		<!-- <view v-if="pendingDate.length" class="notice-bar" @click="jumperOrderList()">
 			<uni-notice-bar show-icon scrollable :text="noticeTextValue" />
 		</view> -->

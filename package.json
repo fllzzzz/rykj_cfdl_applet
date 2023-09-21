@@ -18,6 +18,7 @@
         "@babel/runtime": "^7.20.1",
         "dayjs": "^1.11.6",
         "dingtalk-jsapi": "^3.0.12",
+        "image-tools": "^1.4.0",
         "pinia": "^2.0.23",
         "vue-amap": "^0.5.10"
     }

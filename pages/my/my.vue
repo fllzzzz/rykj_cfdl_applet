@@ -7,6 +7,7 @@
 				<image v-else class="slot-image" src="@/static/my_avater.png" mode="widthFix"></image>
 			</template>
 		</uni-list-item>
+		<!-- <view class="vehicleEntrybtn">车辆录入</view> -->
 	</view>
 	<view class="my-content">
 		<view @click="handleNavigateTo('orderList')">
@@ -20,12 +21,27 @@
 			<uni-list-item title="常用地址" showArrow thumb="../../static/address.png" thumb-size="sm"
 				/>
 		</view>
+		<view @click="handleNavigateTo('vehicleEntry')">
+			<uni-list-item title="车辆录入" showArrow thumb="../../static/my_attestation.png" thumb-size="sm"
+				/>
+		</view>
+		<view @click="handleNavigateTo('parkingInformation')">
+			<uni-list-item title="停车场信息" showArrow thumb="../../static/my_integral.png" thumb-size="sm"
+				/>
+		</view>
 		<!-- <view @click="handleNavigateTo('attestation')">
 			<uni-list-item title="车主认证" showArrow thumb="../../static/my_attestation.png" thumb-size="sm"
 				/>
 		</view> -->
 	</view>
 	<view class="my-menu">
+		<view class="inter" @click="handleNavigateTo('lotteryManagement')">
+			<!-- <img class="image" src="@/static/my_notice.png" alt=""> -->
+			<uni-icons type="wallet-filled" size="30" color="#515B77" ></uni-icons>
+			<text>
+				摇号管理
+			</text>
+		</view>
 		<view class="inter" @click="handleNavigateTo('notice')">
 			<img class="image" src="@/static/my_notice.png" alt="">
 			<text>
@@ -139,6 +155,7 @@
 		width: 100%;
 		height: 200rpx;
 		display: flex;
+		justify-content: space-between;
 	}
 
 	.my-content {
@@ -159,9 +176,9 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		font-size: 28rpx;
+		font-size: 25rpx;
+		
 	}
-
 	.image {
 		width: 60rpx;
 		height: 60rpx;
@@ -197,4 +214,13 @@
 		width: 80rpx;
 		height: 80rpx;
 	}
+	/* .vehicleEntrybtn{
+		border: 1px solid red;
+		color: #353fcb;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		padding-bottom: 10px;
+		font-size: 14px;
+	} */
 </style>

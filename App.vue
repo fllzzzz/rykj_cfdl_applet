@@ -10,17 +10,40 @@
 		globalData: {
 			version: '0.1.9',
 			envIndex: "prod",
+			// // 生产环境	
+			// prod: {
+			// 	baseUrl: 'https://parking.cfmoto.com:8186/parking',
+			// 	agentId: '2039403901'
+			// },
+			// // 测试环境
+			// dev: {
+			// 	baseUrl: 'http://test-parking.cfmoto.com:8186/parking',
+			// 	agentId: '2034016904'
+			// },
 			// 生产环境	
+			// prod: {
+			// 	baseUrl: 'http://39.96.212.168:8083',
+			// 	agentId: '2720211144'
+			// },
+			// // 测试环境
+			// dev: {
+			// 	baseUrl: 'http://39.96.212.168:8083',
+			// 	agentId: '2720211144'
+			// },
+			// 生产环境
 			prod: {
-				baseUrl: 'https://parking.cfmoto.com:8186/parking',
-				agentId: '2039403901'
+				baseUrl: 'http://39.96.212.168:8083',
+				agentId: '2720211144'
 			},
 			// 测试环境
 			dev: {
-				baseUrl: 'http://test-parking.cfmoto.com:8186/parking',
-				agentId: '2034016904'
+				baseUrl: 'http://192.168.3.57:8083',
+				agentId: '2720211144'
 			},
-			env: {}
+			env: {
+				baseUrl: 'http://39.96.212.168:8083',
+				agentId: '2720211144'
+			}
 		},
 	}
 </script>
