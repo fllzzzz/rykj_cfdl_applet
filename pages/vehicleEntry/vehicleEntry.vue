@@ -161,7 +161,7 @@
 			async selectVehicleEntryChange(e){
 				this.result = e
 				let parasm={
-					platNo:this.result
+					plateNo:this.result
 				}
 				console.log(parasm);
 				const res= await getVehicleInfo(parasm)
@@ -405,8 +405,11 @@
 				 uni.showModal({
 				        	title: '提示',
 				        	content: '你确定要删除吗',
+							confirmText: "是",//这块是确定按钮的文字
+							cancelText:"否",//这块是取消的文字
 				        	success: async function (res) {
 				        		if (res.confirm) {
+									console.log(_this,"_this")
 				        			const res=await deleteVerifyList({id:_this.imgData.id})
 				        			if (res.code==200) {
 				        				uni.showToast({
