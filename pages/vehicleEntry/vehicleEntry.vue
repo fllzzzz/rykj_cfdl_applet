@@ -401,12 +401,13 @@
 				
 			},
 			 deleteVehicle(){
+				 let _this=this
 				 uni.showModal({
 				        	title: '提示',
 				        	content: '你确定要删除吗',
 				        	success: async function (res) {
 				        		if (res.confirm) {
-				        			const res=await deleteVerifyList({id:this.imgData.id})
+				        			const res=await deleteVerifyList({id:_this.imgData.id})
 				        			if (res.code==200) {
 				        				uni.showToast({
 				        					title: "删除成功",

@@ -176,15 +176,6 @@
             }
             
         }
-        ,{
-            "path" : "pages/parkingInformation/index/index",
-            "style" :                                                                                    
-            {
-                "navigationBarTitleText": "",
-                "enablePullDownRefresh": false
-            }
-            
-        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",

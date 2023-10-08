@@ -73,7 +73,7 @@
 			async submit(){
 				console.log("提交申请");
 				try{
-					const res = await lotteryApply()
+					const res = await lotteryApply({batchId:this.lotteryData.batchId})
 					if(res.code==200){
 						this.lotteryData.applyState=true
 						uni.showToast({
@@ -89,7 +89,7 @@
 			async cancel(){
 				console.log("取消申请");
 				try{
-					const res = await lotteryCancel()
+					const res = await lotteryCancel({batchId:this.lotteryData.batchId})
 					if(res.code==200){
 						this.lotteryData.applyState=false
 						uni.showToast({

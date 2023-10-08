@@ -48,7 +48,7 @@ export const getUserList =(data)=>{
 	return request('/lottery/assignRule/userList', 'POST', data)
 }
 
-//查询人员列表
+//查询饼图数据
 export const getPieChart =(data)=>{
 	return request('/parking/lot/parkingLot/pieChart', 'POST', data)
 }
