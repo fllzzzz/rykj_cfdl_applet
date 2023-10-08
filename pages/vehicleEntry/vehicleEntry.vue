@@ -419,7 +419,7 @@
 				        					icon:'none',
 				        				})
 				        			}
-				        			this.getseleteList()
+				        			_this.getseleteList()
 				        		} else if (res.cancel) {
 				        			console.log('取消');
 				        		}
