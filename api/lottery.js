@@ -60,6 +60,36 @@ export const addVerify =(data)=>{
 export const updateVerify =(data)=>{
 	return request('/user/verify/update', 'POST', data)
 }
+//查询停车场列表
+export const getparkingLotList =(data)=>{
+	return request('/parking/lot/parkingLot/all', 'POST', data)
+}
+//查询用户停车场列表
+export const getUserParkingLotList =(data)=>{
+	return request('/parkingSpace/change/space/list', 'POST', data)
+}
+//车位互换
+export const applyExchange =(data)=>{
+	return request('/parkingSpace/change/apply', 'POST', data)
+}
+//查询交换车位数量
+export const getExchangeCount =(data)=>{
+	return request('/parkingSpace/change/count', 'POST', data)
+}
+//查询交换车位列表（记录）
+export const getExchangeList =(data)=>{
+	return request('/parkingSpace/change/applet/list', 'POST', data)
+}
+//交换车位操作   同意 否决 撤销
+export const ExchangeDeal =(data)=>{
+	return request('/parkingSpace/change/deal', 'POST', data)
+}
+//根据车牌查询车主信息
+export const getinfoByPlateNo =(data)=>{
+	return request('/user/verify/infoByPlateNo', 'POST', data)
+}
+
+
 
 
 

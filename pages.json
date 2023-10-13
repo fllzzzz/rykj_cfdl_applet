@@ -204,6 +204,11 @@
 				"iconPath": "static/tabbar/travel.png",
 				"selectedIconPath": "static/tabbar/travel_s.png",
 				"text": "搭乘"
+			},{
+				"pagePath": "pages/lotteryManagement/lotteryManagement",
+				"iconPath": "static/tabbar/lottery.png",
+				"selectedIconPath": "static/tabbar/lottery_s.png",
+				"text": "摇号"
 			}, {
 				"pagePath": "pages/my/my",
 				"iconPath": "static/tabbar/my.png",

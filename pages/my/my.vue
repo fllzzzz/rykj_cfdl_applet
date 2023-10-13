@@ -21,27 +21,12 @@
 			<uni-list-item title="常用地址" showArrow thumb="../../static/address.png" thumb-size="sm"
 				/>
 		</view>
-		<view @click="handleNavigateTo('vehicleEntry')">
-			<uni-list-item title="车辆录入" showArrow thumb="../../static/my_attestation.png" thumb-size="sm"
-				/>
-		</view>
-		<view @click="handleNavigateTo('parkingInformation')">
-			<uni-list-item title="停车场信息" showArrow thumb="../../static/my_integral.png" thumb-size="sm"
-				/>
-		</view>
 		<!-- <view @click="handleNavigateTo('attestation')">
 			<uni-list-item title="车主认证" showArrow thumb="../../static/my_attestation.png" thumb-size="sm"
 				/>
 		</view> -->
 	</view>
 	<view class="my-menu">
-		<view class="inter" @click="handleNavigateTo('lotteryManagement')">
-			<!-- <img class="image" src="@/static/my_notice.png" alt=""> -->
-			<uni-icons type="wallet-filled" size="30" color="#515B77" ></uni-icons>
-			<text>
-				摇号管理
-			</text>
-		</view>
 		<view class="inter" @click="handleNavigateTo('notice')">
 			<img class="image" src="@/static/my_notice.png" alt="">
 			<text>

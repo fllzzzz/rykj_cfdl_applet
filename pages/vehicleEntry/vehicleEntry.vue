@@ -6,36 +6,59 @@
 	</view>
 	<view class="vehicleEntryBox">
 		<view class="timeBox">
-			<uni-section title="当前车辆" type="line">
-			      <uni-data-select
-			        v-model="result"
-			        :localdata="range"
-			        @change="selectVehicleEntryChange"
+			<!-- <uni-section title="当前车辆" type="line"> -->
+			<view class="titleBox">
+				<view class="icon-title">
+				</view>
+				<view class="title">
+					当前车辆
+				</view>
+			</view>
+			<view class="formBox">
+				<view class="example-body">
+					<uni-data-select
+					v-model="result"
+					:localdata="range"
+					@change="selectVehicleEntryChange"
 					placeholder="请选择车辆"
-			      ></uni-data-select>
-			</uni-section>
-			<button style="margin-top: 10px;" class="submit-btn" type="primary" @click="showDrawer('showLeft','entry')">车辆录入</button>
+					></uni-data-select>
+				</view>
+				<button class="but" type="primary" @click="showDrawer('showLeft','entry')">车辆录入</button>
+			</view> 
 		</view>
 		<view class="tableBody">
 			<view class="tableBox" v-if="range.length > 0">
 				<uni-notice-bar v-if="imgData.state=='1'" color="#E6A23C" background-color="#fdf6ec" single text="审核中"></uni-notice-bar>
 				<uni-notice-bar v-if="imgData.state=='2'"  color="#fa3534" background-color="#fef0f0" single :text="`审核不通过:${imgData.state}`"></uni-notice-bar>
 				<uni-notice-bar v-if="imgData.state=='3'"  color="#19be6b" background-color="#dbf1e1" single text="审核通过"></uni-notice-bar>
-				<uni-section title="车辆照片" type="line">
-				      <view class="sectionValue">
-						  <image class="valueImage" mode="aspectFit" :src="imgData.vehicleImg" @click="previewImage(imgData.vehicleImg)"></image>
-					  </view>
-				</uni-section>
-				<uni-section title="驾驶证" type="line">
-				      <view class="sectionValue"> 
-						  <image class="valueImage" mode="aspectFit" :src="imgData.drivingLicenseImg" @click="previewImage(imgData.drivingLicenseImg)"></image>
-					  </view>
-				</uni-section>
-				<uni-section title="行驶证" type="line">
-				      <view class="sectionValue"> 
-						  <image class="valueImage" mode="aspectFit" :src="imgData.drivingPermitImg" @click="previewImage(imgData.drivingPermitImg)"></image>
-					  </view>
-				</uni-section>
+				<!-- <uni-section title="车辆照片" type="line"> -->
+					<uni-collapse>
+						<uni-collapse-item :show-animation="true" title="车辆照片">
+							<view class="sectionValue">
+								<image class="valueImage" mode="aspectFit" :src="imgData.vehicleImg" @click="previewImage(imgData.vehicleImg)"></image>
+							</view>
+						</uni-collapse-item>
+					</uni-collapse>
+				<!-- </uni-section> -->
+				<!-- <uni-section title="驾驶证" type="line"> -->
+					<uni-collapse>
+						<uni-collapse-item :show-animation="true" title="驾驶证">
+							<view class="sectionValue">
+								<image class="valueImage" mode="aspectFit" :src="imgData.drivingLicenseImg" @click="previewImage(imgData.drivingLicenseImg)"></image>
+							</view>
+						</uni-collapse-item>
+					</uni-collapse>
+				<!-- </uni-section> -->
+				<!-- <uni-section title="行驶证" type="line"> -->
+				<uni-collapse>
+						<uni-collapse-item :show-animation="true" title="行驶证">
+							<view class="sectionValue">
+								<image class="valueImage" mode="aspectFit" :src="imgData.drivingPermitImg" @click="previewImage(imgData.drivingPermitImg)"></image>
+							</view>
+						</uni-collapse-item>
+					</uni-collapse>
+				     
+				<!-- </uni-section> -->
 				<view class="btns">
 					<!-- <view class="left">
 						<button>车辆录入</button>
@@ -45,7 +68,7 @@
 						<button>删除</button>
 					</view> -->
 					<button  class="left-btn" type="primary" @click="showDrawer('showLeft','update')">修改</button>
-					<view></view>
+					<!-- <view></view> -->
 					<button  class="right-btn" type="primary" @click="deleteVehicle()">删除</button>
 				</view>
 			</view>
@@ -59,19 +82,32 @@
 					<view class="conterBox">
 						<uni-title type="h1" :title="dialogTitle" @click="zzzClick"></uni-title>
 						<!-- 基础用法，不包含校验规则 -->
-						<uni-section title="车牌号" type="line">
-								<!-- <text>{{dialogName}}</text> -->
-						      <!-- <uni-easyinput trim="all" v-model="dialogName" placeholder="请输入内容" @input="input"></uni-easyinput> -->
-							  <view class="inputBox" @click="addLicenseDialog">
-								  <text>
+						<view class="conterItem">
+							<view class="titleBox">
+								<view class="icon-title">
+								</view>
+								<view class="title">
+									车牌号 <text class="rule">*</text>
+								</view>
+							</view>
+							<view class="formBox">
+								<view class="inputBox" @click="addLicenseDialog">
+									<text>
 									  {{dialogName||"请输入车牌"}}
-								  </text>
-								  
-							  </view>
-							  
-						</uni-section>
-						<uni-section title="车辆照片" type="line">
-						     <uni-file-picker
+									</text>					  
+								</view>
+							</view> 
+						</view>
+						<view class="conterItem">
+							<view class="titleBox">
+								<view class="icon-title">
+								</view>
+								<view class="title">
+									车辆照片 <text class="rule">*</text>
+								</view>
+							</view>
+							<view class="formBox">
+								<uni-file-picker
 								 v-model="dialogVehicle"
 								 fileMediatype="image" 
 								 :sizeType="['compressed']"
@@ -79,28 +115,48 @@
 								 @select="selectChange($event,'vehicle')"
 								 @delete="deleteChange($event,'vehicle')"
 								 >
-				              </uni-file-picker>
-						</uni-section>
-						<uni-section title="驾驶证" type="line">
-						      <uni-file-picker
-							     v-model="dialogDrive"
-								 fileMediatype="image" 
-								 :sizeType="['compressed']"
-								 limit="1"
-								 @select="selectChange($event,'drive')"
-								 @delete="deleteChange($event,'drive')" ></uni-file-picker>
-						</uni-section>
-						<uni-section title="行驶证" type="line">
-						     <uni-file-picker
-							   v-model="dialogTravel"
-							   fileMediatype="image"
-							   :sizeType="['compressed']"
-							   limit="1"
-							   @select="selectChange($event,'travel')"
-					           @delete="deleteChange($event,'travel')"
-							   
+								 </uni-file-picker>
+							</view> 
+						</view>
+						<view class="conterItem">
+							<view class="titleBox">
+								<view class="icon-title">
+								</view>
+								<view class="title">
+									驾驶证 <text class="rule">*</text>
+								</view>
+							</view>
+							<view class="formBox">
+								<uni-file-picker
+								   v-model="dialogDrive"
+								   fileMediatype="image" 
+								   :sizeType="['compressed']"
+								   limit="1"
+								   @select="selectChange($event,'drive')"
+								   @delete="deleteChange($event,'drive')" >
+								</uni-file-picker>
+							</view> 
+						</view>
+						<view class="conterItem">
+							<view class="titleBox">
+								<view class="icon-title">
+								</view>
+								<view class="title">
+									行驶证 <text class="rule">*</text>
+								</view>
+							</view>
+							<view class="formBox">
+								<uni-file-picker
+								  v-model="dialogTravel"
+								  fileMediatype="image"
+								  :sizeType="['compressed']"
+								  limit="1"
+								  @select="selectChange($event,'travel')"
+								  @delete="deleteChange($event,'travel')"
+								  
 								></uni-file-picker>
-						</uni-section>
+							</view> 
+						</view>
 						<view class="btns">
 							<button  class="left-btn" type="primary" @click="dialogUpdata()">提交审核</button>
 							<view></view>
@@ -452,7 +508,7 @@
 	}
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .contentCar{
 	position: relative;
 	z-index: 100 !important;
@@ -464,9 +520,53 @@
 	.timeBox{
 		border-radius: 10px;
 		padding: 30rpx;
-		border-radius: 50rpx;
-		box-shadow: 1px 1px 5px 0px rgba(0, 0, 0, 0.5);
-		background-color: #fff;
+		background: #FFFFFF;
+		box-shadow: 0rpx 4rpx 10rpx 0rpx rgba(0,0,0,0.08);
+		border-radius: 16rpx;
+		.titleBox{
+			display: flex;
+			align-items: center;
+			.icon-title{
+				width: 8rpx;
+				height: 32rpx;
+				background: #007AFF;
+			}
+			.title{
+				font-size: 32rpx;
+				font-weight: 600;
+				color: #000000;
+				margin-left: 10rpx;
+			}
+		}
+		.formBox{
+			display: flex;
+			justify-content: space-around;
+			margin-top: 20rpx;
+			.example-body{
+				width: 436rpx;
+				height: 80rpx;
+				.uni-stat__select{
+					background: #EEF6FF;
+					border-radius: 8rpx;
+					height: 100%;
+				}
+				::v-deep .uni-select{
+					border: 1px solid #EEF6FF !important;
+				}
+			}
+			.but{
+				width: 192rpx;
+				height: 80rpx;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				font-size: 32rpx;
+				font-weight: 600;
+				color: #FFFFFF;
+				background: #007AFF;
+				border-radius: 8rpx;
+			}
+		}
 		.timelist{
 			margin-top: 10px;
 			.title{
@@ -482,37 +582,34 @@
 	.tableBody{
 		border-radius: 10px;
 		padding: 30rpx;
-		border-radius: 50rpx;
-		box-shadow: 1px 1px 5px 0px rgba(0, 0, 0, 0.5);
-		background-color: #fff;
+	    background: #FFFFFF;
+	    box-shadow: 0rpx 4rpx 10rpx 0rpx rgba(0,0,0,0.08);
+	    border-radius: 16rpx;
 		margin-top: 10px;
 		.qsBox{
 			display: flex;
 			justify-content: center;
 			align-items: center;
+			color: #ccc;
 		}
 		.tableBox{
 			margin-top: 0px;
 			.btns{
 				margin-top: 10px;
 				display: flex;
-				// justify-content: space-between;
-				// align-items: center;
+				justify-content: space-around;
 				.left-btn{
-					flex: 2;
-				}
-				view{
-					flex: 1;
+					width: 45%;
 				}
 				.right-btn{
-					flex: 2;
+					width: 45%;
+					background-color: #f43939;
+					border: 1px solid #f43939;
 				}
 			}
 			.sectionValue{
-				padding-left: 30rpx;
 				.valueImage{
-					width: 50%;
-					height: 270rpx;
+					width: 100%;
 				}
 			}
 		}
@@ -526,8 +623,35 @@
 		}
 		.conterBox{
 			padding: 10px;
+			background-color: #FFFFFF;
+			.conterItem{
+				margin-top: 23rpx;
+				.titleBox{
+					display: flex;
+					align-items: center;
+					padding-left: 10rpx;
+					.icon-title{
+						width: 8rpx;
+						height: 32rpx;
+						background: #007AFF;
+					}
+					.title{
+						font-size: 32rpx;
+						font-weight: 600;
+						color: #000000;
+						margin-left: 10rpx;
+					}
+					.rule{
+						color: red;
+					}
+				}
+				.formBox{
+					margin-top: 20rpx
+					;
+				}
+			}
 			.inputBox{
-				border: 1px solid #ccc;
+				border: 1px solid rgba(238,238,238);
 				height: 60rpx;
 				padding-left:20rpx;
 				line-height: 60rpx;
@@ -535,16 +659,12 @@
 			.btns{
 				margin-top: 10px;
 				display: flex;
-				// justify-content: space-between;
-				// align-items: center;
+				justify-content: space-around;
 				.left-btn{
-					flex: 4;
-				}
-				view{
-					flex: 1;
+					width: 45%;
 				}
 				.right-btn{
-					flex: 2;
+					width: 45%
 				}
 			}
 		}
