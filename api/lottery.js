@@ -88,6 +88,10 @@ export const ExchangeDeal =(data)=>{
 export const getinfoByPlateNo =(data)=>{
 	return request('/user/verify/infoByPlateNo', 'POST', data)
 }
+//查询摇号规则
+export const getdescriptionInfo =(data)=>{
+	return request('/lottery/description/info', 'POST', data)
+}
 
 
 

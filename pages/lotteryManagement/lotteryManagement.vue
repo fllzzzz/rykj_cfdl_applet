@@ -7,7 +7,7 @@
 		</view>
 		<view class="zzcBox" v-if="zzcisShow" @click="zzcisShow=false"></view>
 		<!-- 普通弹窗 -->
-		<view class="tkBox" >
+		<view class="tkBox">
 			<view class="popupBox" ref="popup" v-if="zzcisShow">
 				<view class="seteleCenter">
 					<view :class="popupActive==item?'active':''" class="btn" v-for="item in cphList" :key="item" @click="popupClick(item)">
@@ -67,7 +67,6 @@
 						<view @click="tabActive(2)" :class="active == 2?'tab active':'tab'">车位交换 <uni-badge class="uni-badge-left-margin" :text="exchangeCount" v-if="exchangeCount!='0'"  /></view>
 					</view>
 					<view class="lotteryBox" v-if="active==0">
-						<!--  -->
 						<view v-if="lotteryData.timeState">
 							<button v-if="!lotteryData.applyState" :disabled="!cphList.length>0" :class="!cphList.length>0?'btn disabledColor':'btn'" type="primary" @click="lotterySubmit" >立即报名</button>
 							<button v-else :class="!cphList.length>0?'btn disabledColor':'btn'" type="primary" :disabled="!cphList.length>0" @click="lotteryCancelClick">取消申请</button>
@@ -102,6 +101,17 @@
 								</text>
 							</view>
 						</view>
+						<view v-if="isIconShow" class="message bck">
+							<view class="item">
+								<text class="name">摇号规则</text>
+								<text class="value">{{lotteryDescriptionInfo||'暂无规则'}}</text>
+							</view>
+						</view>
+						<view class="isIcon" @click="isIconShowClick">
+							<uni-icons type="bottom" size="20" color="#ccc" v-if="!isIconShow"></uni-icons>
+							<uni-icons type="top" size="20" color="#ccc" v-else></uni-icons>
+						</view>
+						
 					</view>
 					<view class="transferBox" v-if="active==1">
 						<view v-if="userparkingList.length>0">
@@ -308,9 +318,9 @@
 									<text class="name">{{item.userName}}</text>
 									<text class="stall">{{item.parkingName}}</text>
 								</view>
-								<view v-if="item.state=='1'" class="typeBox trpegreen">已同意</view>
-								<view v-if="item.state=='2'" class="typeBox trpered">已拒绝</view>
-								<view v-if="item.state=='3'" class="typeBox trpeblue">已撤销</view>
+								<view v-if="item.state=='1'" class="typeBox trpegreen">同意</view>
+								<view v-if="item.state=='2'" class="typeBox trpered">拒绝</view>
+								<view v-if="item.state=='3'" class="typeBox trpeblue">撤销</view>
 							</view>
 					
 						</view>
@@ -319,9 +329,8 @@
 				</view>
 			</view>
 		</view>
-		<uni-drawer class="drawerBox " ref="showLeft" mode="left" :width="320" @change="change($event,'showLeft')">
+		<uni-drawer class="drawerBox" ref="showLeft" mode="left" :width="320" @change="change($event,'showLeft')">
 			<view class="conterBox">
-				<!-- <uni-title type="h1" title="一键挪车" @click="zzzClick"></uni-title> -->
 				<view class="titleBox">
 					<view class="title">
 						<view class="title-left">
@@ -331,8 +340,10 @@
 					</view>
 					<view class="form">
 						<view class="example-body">
-							<!--  @click="addLicenseDialog" -->
-							<input v-model="license" class="u-input" placeholder="请输入车牌号" />
+							<!-- <input v-model="license" @click="addLicenseDialog" class="u-input" placeholder="请输入车牌号" /> -->
+							<view class="copeInput" @click="addLicenseDialog">
+								{{license||'请输入车牌号'}}
+							</view>
 						</view>
 						<view>
 							<button class="but" @click="getinfo">
@@ -377,7 +388,8 @@ applyExchange,
 getExchangeCount,
 getExchangeList,
 ExchangeDeal,
-getinfoByPlateNo
+getinfoByPlateNo,
+getdescriptionInfo
 } from "@/api/lottery.js"
 	export default {
 		data() {
@@ -464,7 +476,9 @@ getinfoByPlateNo
 					mobile:''
 				},
 				isUserMessageShow:false,
-				showLicenseDialog:false
+				showLicenseDialog:false,
+				isIconShow:false,
+				lotteryDescriptionInfo:''
 			}
 		},
 		methods: {
@@ -904,7 +918,17 @@ getinfoByPlateNo
 				console.log(license);
 				this.license = license
 			},
-			
+			//显示隐藏 规则
+			isIconShowClick(){
+				console.log("点击了");
+				console.log(this.isIconShow);
+				this.isIconShow=!this.isIconShow
+				console.log(this.isIconShow);
+			},
+			async getlotterInfo(){
+				const res=await getdescriptionInfo()
+				this.lotteryDescriptionInfo=res.data.description
+			}
 		},
 		onLoad() {
 			//获取人员列表
@@ -927,11 +951,13 @@ getinfoByPlateNo
 			this.getExchangeArr()
 			//查询交换记录
 			this.getExchangeRecordList()
+			//查询摇号规则
+			this.getlotterInfo()
 		}
 	}
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .contentCar{
 	position: relative;
 	z-index: 999 !important;
@@ -946,8 +972,10 @@ getinfoByPlateNo
 		top: 0;
 		left: 0;
 	}
-	.drawerBox{
-		z-index: 2 !important;
+	
+		.uni-drawer{
+			z-index:3 !important;
+		}
 		.conterBox{
 			padding: 20rpx;
 			.titleBox{
@@ -988,15 +1016,18 @@ getinfoByPlateNo
 				display: flex;
 				justify-content: space-around;
 				.example-body{
-					width: 386rpx;
-					.u-input{
+					width: 70%;
+					.copeInput{
 						border-radius: 8rpx;
 						height: 100%;
 						font-size: 20rpx;
 						padding: 10rpx;
 						box-sizing: border-box;
 						border: 1px solid #ccc;
+						display: flex;
+						align-items: center;
 					}
+					
 				}
 				.but{
 					width: 152rpx;
@@ -1033,7 +1064,7 @@ getinfoByPlateNo
 				}
 			}
 		}
-	}
+	// }
 }
 .lotteryManagementBox{
 	background-color: #F1F8FF;
@@ -1172,6 +1203,10 @@ getinfoByPlateNo
 			background: #FFFFFF;
 			border-radius: 32rpx;
 			padding: 20rpx;
+			.isIcon{
+				text-align: center;
+				margin-top: 10rpx;
+			}
 			.qsText{
 				padding: 30rpx;
 				text-align: center;
@@ -1233,7 +1268,6 @@ getinfoByPlateNo
 				padding: 12rpx;
 				.uni-countdown__number{
 					border-radius: 50% !important;
-					border: 1px solid red;
 				}
 				.text{
 					font-size: 28rpx;
@@ -1353,8 +1387,8 @@ getinfoByPlateNo
 					border-radius: 8rpx;
 					position: relative;
 					.typeBox{
-						width: 80rpx;
-						height: 80rpx;
+						width: 60rpx;
+						height: 60rpx;
 						position: absolute;
 						right: 0;
 						top: 0;

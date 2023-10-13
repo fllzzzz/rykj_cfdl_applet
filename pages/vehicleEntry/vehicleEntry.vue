@@ -508,7 +508,7 @@
 	}
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .contentCar{
 	position: relative;
 	z-index: 100 !important;
