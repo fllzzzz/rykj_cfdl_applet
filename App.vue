@@ -8,7 +8,7 @@
 			}
 		},
 		globalData: {
-			version: '0.1.9',
+			version: '0.2.1',
 			envIndex: "prod",
 			// // 生产环境	
 			// prod: {
