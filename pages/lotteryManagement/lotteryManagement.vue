@@ -23,7 +23,7 @@
 						<view class="itemBox">
 							<view class="imgBox">
 								<swiper class="swiper" circular :vertical="true" :indicator-dots="true" :autoplay="true" :interval="2000"
-												:duration="500" v-if="item.files&&item.files.length>0">
+									:duration="500" v-if="item.files&&item.files.length>0">
 									<swiper-item v-for="(element,index) in item.files" :key="index">
 										<img class="scroll_img" :src="element.url" alt="" @click="previewImage(element.url)">
 									</swiper-item>
@@ -101,10 +101,10 @@
 								</text>
 							</view>
 						</view>
-						<view class="message bck">
+						<view v-if="isIconShow" class="message bck">
 							<view class="item">
 								<text class="name">摇号规则</text>
-								<text :class="isIconShow?'value':'value-once'">{{lotteryDescriptionInfo||'暂无规则'}}</text>
+								<text class="value">{{lotteryDescriptionInfo||'暂无规则'}}</text>
 							</view>
 						</view>
 						<view class="isIcon" @click="isIconShowClick">
@@ -162,25 +162,25 @@
 						</view>
 					</view>
 					<!-- <view :class="isShow?'ul Entrance':'ul departure'" v-show="isShow"> -->
-					<scroll-view class="ul" v-if="isShow" :scroll-y="true"  @scrolltolower="onLoadMore">
-						<view class="message bck" v-for="item in lotteryRecordList" :key="item.id">
-							<view class="item">
-								<text class="name">摇号期数</text>
-								<text class="value">{{item.batchNum}}</text>
+						<scroll-view class="ul" v-if="isShow" :scroll-y="true"  @scrolltolower="onLoadMore">
+							<view class="message bck" v-for="item in lotteryRecordList" :key="item.id">
+								<view class="item">
+									<text class="name">摇号期数</text>
+									<text class="value">{{item.batchNum}}</text>
+								</view>
+								<view class="item">
+									<text class="name">车位有效期</text>
+									<text class="value">{{ item.validStartDate }}-{{item.validEndDate}}</text>
+								</view>
+								<view class="item">
+									<text class="name">摇号结果</text>
+									<text class="value">
+										{{ item.result }}
+									</text>
+								</view>
 							</view>
-							<view class="item">
-								<text class="name">车位有效期</text>
-								<text class="value">{{ item.validStartDate }}-{{item.validEndDate}}</text>
-							</view>
-							<view class="item">
-								<text class="name">摇号结果</text>
-								<text class="value">
-									{{ item.result }}
-								</text>
-							</view>
-						</view>
-						<view v-if="showLoading" class="loading">{{loadingText}}</view>
-					</scroll-view>
+							<view v-if="showLoading" class="loading">{{loadingText}}</view>
+						</scroll-view>
 
 					<!-- </view> -->
 
@@ -374,412 +374,448 @@
 
 <script>
 import {
-	getUserList,
-	lotteryInfo,
-	lotteryApply,
-	getparkingLotList,
-	getApplyRecordList,
-	lotteryCancel,
-	getVehicleList,
-	getUserParkingLotList,
-	transfer,
-	gettransferRecordList,
-	applyExchange,
-	getExchangeCount,
-	getExchangeList,
-	ExchangeDeal,
-	getinfoByPlateNo,
-	getdescriptionInfo
+getUserList,
+lotteryInfo,
+lotteryApply,
+getparkingLotList,
+getApplyRecordList,
+lotteryCancel,
+getVehicleList,
+getUserParkingLotList,
+transfer,
+gettransferRecordList,
+applyExchange,
+getExchangeCount,
+getExchangeList,
+ExchangeDeal,
+getinfoByPlateNo,
+getdescriptionInfo
 } from "@/api/lottery.js"
-export default {
-	data() {
-		return {
-			userId:uni.getStorageSync('user').userId,
-			// userId:1668559697477717,
-			old: {
-				scrollTop: 0
-			},
-			active:0,
-			isShow:false,
-			iszyShow:false,
-			isjhShow:false,
-			// 获取人员列表
-			candidates:[],
-			//选择转赠用户
-			userName:'',
-			//摇号信息
-			lotteryData:{
-				applyEndTime: "",
-				applyStartTime: "",
-				applyState: true,
-				batchId: 0,
-				result: "测试数据结果",
-				resultColor:'1',
-				timeState: true,
-				validEndDate: "",
-				validStartDate: "",
-				batchNum:''
-			},
-			//倒计时
-			countDown:{
-				day:0,
-				hour:0,
-				minute:0,
-				second:0
-			},
-			//停车场列表
-			parkingLotList:[],
-			//摇号记录列表
-			lotteryPageData:{
-				pageNo:1,
-				pageSize:4
-			},
-			//转移记录列表
-			transferPageData:{
-				pageNo:1,
-				pageSize:4
-			},
-			//交换记录列表
-			exchangePageData:{
-				pageNo:1,
-				pageSize:4,
-				nestate:0
-			},
-			lotteryRecordList:[],
-			transferRecordList:[],
-			exchangeRecordList:[],
-			showLoading: false, // 是否展示加载中提示
-			loadingText: '加载中，请稍后',// 加载中提示文本
-			showLoadingzy: false, // 是否展示加载中提示
-			loadingTextzy: '加载中，请稍后',// 加载中提示文本
-			showLoadingjh: false, // 是否展示加载中提示
-			loadingTextjh: '加载中，请稍后',// 加载中提示文本
-			cphList: [],//车牌号列表
-			popupActive:'',//车牌号名称
-			userparkingList:[],//用户停车位信息
-			transferName:'',//转赠人
-			parkingData:{ //需要交换的车位信息
-				endDate: "",
-				jobNumber: "",//工号
-				parkingLot: "",
-				startDate: "",
-				parkingName:''
-			},
-			exchangeName:'',//交换人员
-			exchangeCount:'',//交换信息数量
-			ApplyExchangeList:[],//申请列表
-			zzcisShow:false,//遮罩层
-			license:'',//查询车牌号
-			userData:{
-				name:'',
-				jobNumber:'',
-				mobile:''
-			},
-			isUserMessageShow:false,
-			showLicenseDialog:false,
-			isIconShow:false,
-			lotteryDescriptionInfo:''
-		}
-	},
-	methods: {
-		handleNavigateTo(path){
-			console.log(path);
-			uni.navigateTo({
-				url:`/pages/${path}/${path}`
-			})
+	export default {
+		data() {
+			return {
+				userId:uni.getStorageSync('user').userId,
+				// userId:1668559697477717,
+				old: {
+					scrollTop: 0
+				},
+				active:0,
+				isShow:false,
+				iszyShow:false,
+				isjhShow:false,
+				// 获取人员列表
+				candidates:[],
+				//选择转赠用户
+				userName:'',
+				//摇号信息
+				lotteryData:{
+					applyEndTime: "",
+					applyStartTime: "",
+					applyState: true,
+					batchId: 0,
+					result: "测试数据结果",
+					resultColor:'1',
+					timeState: true,
+					validEndDate: "",
+					validStartDate: "",
+					batchNum:''
+				},
+				//倒计时
+				countDown:{
+					day:0,
+					hour:0,
+					minute:0,
+					second:0
+				},
+				//停车场列表
+				parkingLotList:[],
+				//摇号记录列表
+				lotteryPageData:{
+					pageNo:1,
+					pageSize:4
+				},
+				//转移记录列表
+				transferPageData:{
+					pageNo:1,
+					pageSize:4
+				},
+				//交换记录列表
+				exchangePageData:{
+					pageNo:1,
+					pageSize:4,
+					nestate:0
+				},
+				lotteryRecordList:[],
+				transferRecordList:[],
+				exchangeRecordList:[],
+				showLoading: false, // 是否展示加载中提示
+				loadingText: '加载中，请稍后',// 加载中提示文本
+				showLoadingzy: false, // 是否展示加载中提示
+				loadingTextzy: '加载中，请稍后',// 加载中提示文本
+				showLoadingjh: false, // 是否展示加载中提示
+				loadingTextjh: '加载中，请稍后',// 加载中提示文本
+				cphList: [],//车牌号列表
+				popupActive:'',//车牌号名称
+				userparkingList:[],//用户停车位信息
+				transferName:'',//转赠人
+				parkingData:{ //需要交换的车位信息
+					endDate: "",
+					jobNumber: "",//工号
+					parkingLot: "",
+					startDate: "",
+					parkingName:''
+				},
+				exchangeName:'',//交换人员
+				exchangeCount:'',//交换信息数量
+				ApplyExchangeList:[],//申请列表
+				zzcisShow:false,//遮罩层
+				license:'',//查询车牌号
+				userData:{
+					name:'',
+					jobNumber:'',
+					mobile:''
+				},
+				isUserMessageShow:false,
+				showLicenseDialog:false,
+				isIconShow:false,
+				lotteryDescriptionInfo:''
+			}
 		},
-		scroll: function(e) {
-			this.old.scrollTop = e.detail.scrollTop
-		},
-		tabActive(data){
-			this.active=data
-		},
-		isShowClick(){
-			this.isShow=!this.isShow
-		},
-		iszyShowClick(){
-			this.iszyShow=!this.iszyShow
-		},
-		isjhShowClick(){
-			this.isjhShow=!this.isjhShow
-		},
-		async getnameList(){
-			const res=await getUserList()
-			if (res.code==200) {
-				res.data.forEach((item,index)=>{
-					let string=`${item.name}(${item.code})`
-					this.candidates.push(string)
+		methods: {
+			handleNavigateTo(path){
+				console.log(path);
+				uni.navigateTo({
+					url:`/pages/${path}/${path}`
 				})
-			}
-		},
-		//点击放大图片
-		previewImage(url){
-			console.log(url);
-			let arr=[]
-			arr.push(url)
-			uni.previewImage({
-				urls:arr
-			})
-		},
-		//获取摇号信息
-		async getLotteryInfo(){
-			const res = await lotteryInfo()
-			console.log(res);
-			this.lotteryData=res.data
-			this.countDownFun(this.lotteryData.applyEndTime)
-		},
-		//获取停车场信息
-		async getparkingLot(){
-			const res=await getparkingLotList()
-			console.log("res",res);
-			this.parkingLotList=res.data
-		},
-		//根据日期计算时分秒
-		countDownFun(time) {
-			let now = new Date();
-			let endDate = new Date(time);
-			let leftTime = endDate.getTime() - now.getTime(); //计算剩余的毫秒数
-			if (leftTime <= 0) {
-				leftTime = 0;
-			}
-			let leftsecond = parseInt(leftTime / 1000); //计算剩余的秒数
-			let day = Math.floor(leftsecond / (60 * 60 * 24));
-			let hour = Math.floor((leftsecond - day * 24 * 60 * 60) / 3600);
-			let minute = Math.floor((leftsecond - day * 24 * 60 * 60 - hour * 3600) / 60);
-			let second = Math.floor(leftTime / 1000 % 60, 10);
-			// return `${day}天${hour}小时${minute}分钟${second}秒`;
-			this.countDown={
-				day,
-				hour,
-				minute,
-				second
-			}
-
-		},
-		//立即报名
-		async lotterySubmit(){
-			console.log("提交申请");
-			try{
-				const res = await lotteryApply({batchId:this.lotteryData.batchId})
-				if(res.code==200){
-					this.lotteryData.applyState=true
-					uni.showToast({
-						title: "申请成功",
-						icon:'none',
-					})
-				}
-			}catch(e){
-				console.log(e);
-			}
-
-		},
-		//取消报名
-		async lotteryCancelClick(){
-			console.log("取消申请");
-			try{
-				const res = await lotteryCancel({batchId:this.lotteryData.batchId})
-				if(res.code==200){
-					this.lotteryData.applyState=false
-					uni.showToast({
-						title: "取消成功",
-						icon:'none',
-					})
-				}
-			}catch(e){
-
-			}
-
-		},
-		//摇号记录查询
-		async getlotteryList(){
-			if (!this.showLoading) {
-				this.showLoading = true // 展示加载中提示
-				const res=await getApplyRecordList(this.lotteryPageData)
-				if(res.data.list.length>0){
-					this.loadingText="加载中，请稍后"
-					res.data.list.forEach((element)=>{
-						this.lotteryRecordList.push(element)
-					})
-
-				}else{
-					this.loadingText="暂无更多"
-				}
-				this.showLoading = false // 隐藏加载中提示
-			}
-
-		},
-		//转移记录查询
-		async getTransferList(){
-			if (!this.showLoadingzy) {
-				this.showLoadingzy = true // 展示加载中提示
-				const res=await gettransferRecordList(this.transferPageData)
-				if(res.data.list.length>0){
-					this.loadingTextzy="加载中，请稍后"
-					res.data.list.forEach((element)=>{
-						this.transferRecordList.push(element)
-					})
-				}else{
-					this.loadingTextzy="暂无更多"
-				}
-				this.showLoadingzy = false // 隐藏加载中提示
-
-			}
-		},
-		//交换记录查询
-		async getExchangeRecordList(){
-			if (!this.showLoadingjh) {
-				this.showLoadingjh = true // 展示加载中提示
-				const res=await getExchangeList(this.exchangePageData)
-				if(res.data.list.length>0){
-					this.loadingTextjh="加载中，请稍后"
-					res.data.list.forEach((element)=>{
-						this.exchangeRecordList.push(element)
-					})
-				}else{
-					this.loadingTextjh="暂无更多"
-				}
-				this.showLoadingjh = false // 隐藏加载中提示
-
-			}
-
-		},
-		// 交换列表查询
-		async getExchangeArr(){
-			let params={
-				pageNo:1,
-				pageSize:10,
-				state:0
-			}
-			const res=await getExchangeList(params)
-			console.log(res,"res");
-			this.ApplyExchangeList=res.data.list
-		},
-		//获取车牌号码
-		async getseleteList(name){
-			const res= await getVehicleList()
-			console.log(res,"车牌号码list");
-			this.cphList=res.data
-			this.popupActive=this.cphList[0]
-
-		},
-		//获取当前用户车位信息
-		async getuserlotList(){
-			const res=await getUserParkingLotList()
-			console.log(res);
-			this.userparkingList=res.data
-		},
-		//转移车位
-		async parkingTransfer(){
-			let todayDate=new Date().setHours(0,0,0,0);
-			let isToday=false
-			// this.userparkingList[0].endDate='2023-10-11'
-			this.userparkingList.forEach((element)=>{
-				let paramsDate=new Date(element.endDate).setHours(0,0,0,0);//给new Date()传入时间，并返回传入时间的时间戳s
-				if(todayDate<paramsDate){
-					isToday=true
-				}
-			})
-			if(!isToday){
-				uni.showToast({
-					title: "当前车位无法转移",
-					icon:'none',
-				})
-				return
-			}
-			console.log(isToday,"isToday");
-			if (this.transferName=="") {
-				uni.showToast({
-					title: "请选择转移人",
-					icon:'none',
-				})
-				return
-			}
-			var index = this.transferName.lastIndexOf("(");
-			let str=""
-			str = this.transferName.substring(index+1,this.transferName.length-1);
-			let params={
-				jobNum:str
-			}
-			const res=await transfer(params)
-			if (res.code==200) {
-				this.getuserlotList()
-				uni.showToast({
-					title: "转移成功",
-					icon:'none',
-				})
-			} else{
-				uni.showToast({
-					title: res.msg,
-					icon:'none',
-				})
-			}
-
-		},
-		//交换车位
-		async ImmediateExchange(){
-			if(this.parkingData.parkingLot==''){
-				uni.showToast({
-					title: "请选择要交换的车位",
-					icon:'none',
-				})
-				return
-			}
-			if(this.exchangeName==''){
-				uni.showToast({
-					title: "请选择交换人",
-					icon:'none',
-				})
-				return
-			}
-			var index = this.exchangeName.lastIndexOf("(");
-			let JobNumber=""
-			JobNumber = this.exchangeName.substring(index+1,this.exchangeName.length-1);
-			let UserName=""
-			UserName=this.exchangeName.substring(0,index);
-			let params = {
-				acceptJobNumber: JobNumber,
-				acceptUserName:UserName,
-				parkingCode: this.parkingData.parkingLot,
-				validEndDate: this.parkingData.endDate,
-				validStartDate: this.parkingData.startDate
-			}
-			try{
-				const res= await applyExchange(params)
+			},
+			scroll: function(e) {
+				this.old.scrollTop = e.detail.scrollTop
+			},
+			tabActive(data){
+				this.active=data
+			},
+			isShowClick(){
+				this.isShow=!this.isShow
+			},
+			iszyShowClick(){
+				this.iszyShow=!this.iszyShow
+			},
+			isjhShowClick(){
+				this.isjhShow=!this.isjhShow
+			},
+			async getnameList(){
+				const res=await getUserList()
 				if (res.code==200) {
+					res.data.forEach((item,index)=>{
+						let string=`${item.name}(${item.code})`
+						this.candidates.push(string)
+					})
+				}
+			},
+			//点击放大图片
+			previewImage(url){
+				console.log(url);
+				let arr=[]
+				arr.push(url)
+				uni.previewImage({
+					urls:arr
+				})
+			},
+			//获取摇号信息
+			async getLotteryInfo(){
+				const res = await lotteryInfo()
+				console.log(res);
+				this.lotteryData=res.data
+				this.countDownFun(this.lotteryData.applyEndTime)
+			},
+			//获取停车场信息
+			async getparkingLot(){
+				const res=await getparkingLotList()
+				console.log("res",res);
+				this.parkingLotList=res.data
+			},
+			//根据日期计算时分秒
+			 countDownFun(time) {
+			    let now = new Date();
+			    let endDate = new Date(time);
+			    let leftTime = endDate.getTime() - now.getTime(); //计算剩余的毫秒数
+			    if (leftTime <= 0) {
+			        leftTime = 0;
+			    }
+			    let leftsecond = parseInt(leftTime / 1000); //计算剩余的秒数
+			    let day = Math.floor(leftsecond / (60 * 60 * 24));
+			    let hour = Math.floor((leftsecond - day * 24 * 60 * 60) / 3600);
+			    let minute = Math.floor((leftsecond - day * 24 * 60 * 60 - hour * 3600) / 60);
+			    let second = Math.floor(leftTime / 1000 % 60, 10);
+			    // return `${day}天${hour}小时${minute}分钟${second}秒`;
+				this.countDown={
+					day,
+					hour,
+					minute,
+					second
+				}
+
+			},
+			//立即报名
+			async lotterySubmit(){
+				console.log("提交申请");
+				try{
+					const res = await lotteryApply({batchId:this.lotteryData.batchId})
+					if(res.code==200){
+						this.lotteryData.applyState=true
+						uni.showToast({
+							title: "申请成功",
+							icon:'none',
+						})
+					}
+				}catch(e){
+					console.log(e);
+				}
+
+			},
+			//取消报名
+			async lotteryCancelClick(){
+				console.log("取消申请");
+				try{
+					const res = await lotteryCancel({batchId:this.lotteryData.batchId})
+					if(res.code==200){
+						this.lotteryData.applyState=false
+						uni.showToast({
+							title: "取消成功",
+							icon:'none',
+						})
+					}
+				}catch(e){
+
+				}
+
+			},
+			//摇号记录查询
+			async getlotteryList(){
+				if (!this.showLoading) {
+				  this.showLoading = true // 展示加载中提示
+				  const res=await getApplyRecordList(this.lotteryPageData)
+				  if(res.data.list.length>0){
+					  this.loadingText="加载中，请稍后"
+					  res.data.list.forEach((element)=>{
+					  	this.lotteryRecordList.push(element)
+					  })
+
+				  }else{
+					   this.loadingText="暂无更多"
+				  }
+				   this.showLoading = false // 隐藏加载中提示
+				}
+
+			},
+			//转移记录查询
+			async getTransferList(){
+				if (!this.showLoadingzy) {
+				  this.showLoadingzy = true // 展示加载中提示
+				  const res=await gettransferRecordList(this.transferPageData)
+				  if(res.data.list.length>0){
+					  this.loadingTextzy="加载中，请稍后"
+					  res.data.list.forEach((element)=>{
+					  	this.transferRecordList.push(element)
+					  })
+				  }else{
+					   this.loadingTextzy="暂无更多"
+				  }
+				   this.showLoadingzy = false // 隐藏加载中提示
+
+				}
+			},
+			//交换记录查询
+			async getExchangeRecordList(){
+				if (!this.showLoadingjh) {
+				  this.showLoadingjh = true // 展示加载中提示
+				  const res=await getExchangeList(this.exchangePageData)
+				  if(res.data.list.length>0){
+					  this.loadingTextjh="加载中，请稍后"
+					  res.data.list.forEach((element)=>{
+					  	this.exchangeRecordList.push(element)
+					  })
+				  }else{
+					   this.loadingTextjh="暂无更多"
+				  }
+				   this.showLoadingjh = false // 隐藏加载中提示
+
+				}
+
+			},
+			// 交换列表查询
+			async getExchangeArr(){
+				let params={
+					pageNo:1,
+					pageSize:10,
+					state:0
+				}
+				const res=await getExchangeList(params)
+				console.log(res,"res");
+				this.ApplyExchangeList=res.data.list
+			},
+			//获取车牌号码
+			async getseleteList(name){
+				const res= await getVehicleList()
+				console.log(res,"车牌号码list");
+				this.cphList=res.data
+				this.popupActive=this.cphList[0]
+
+			},
+			//获取当前用户车位信息
+			async getuserlotList(){
+				const res=await getUserParkingLotList()
+				console.log(res);
+				this.userparkingList=res.data
+			},
+			//转移车位
+			async parkingTransfer(){
+				let todayDate=new Date().setHours(0,0,0,0);
+				let isToday=false
+				// this.userparkingList[0].endDate='2023-10-11'
+				this.userparkingList.forEach((element)=>{
+					let paramsDate=new Date(element.endDate).setHours(0,0,0,0);//给new Date()传入时间，并返回传入时间的时间戳s
+					if(todayDate<paramsDate){
+						isToday=true
+					}
+				})
+				if(!isToday){
 					uni.showToast({
-						title: "申请成功",
+						title: "当前车位无法转移",
 						icon:'none',
 					})
-					this.getExchangeArr()
-					this.getExchange()
+					return
+				}
+				console.log(isToday,"isToday");
+				if (this.transferName=="") {
+					uni.showToast({
+						title: "请选择转移人",
+						icon:'none',
+					})
+					return
+				}
+				var index = this.transferName.lastIndexOf("(");
+				let str=""
+				str = this.transferName.substring(index+1,this.transferName.length-1);
+				let params={
+					jobNum:str
+				}
+				const res=await transfer(params)
+				if (res.code==200) {
+					this.getuserlotList()
+					uni.showToast({
+						title: "转移成功",
+						icon:'none',
+					})
 				} else{
 					uni.showToast({
 						title: res.msg,
 						icon:'none',
 					})
 				}
-			}catch(e){
-				//TODO handle the exception
-			}
-		},
-		//交换列表操作 同意 不同意 撤销
-		async ExchangeOperation(item,type){
-			console.log(item,"type");
-			if(type=='consent'){
-				console.log(1);
-				if(this.parkingData.parkingLot!=''){
-					console.log("调接口");
+
+			},
+			//交换车位
+			async ImmediateExchange(){
+				if(this.parkingData.parkingLot==''){
+					uni.showToast({
+						title: "请选择要交换的车位",
+						icon:'none',
+					})
+					return
+				}
+				if(this.exchangeName==''){
+					uni.showToast({
+						title: "请选择交换人",
+						icon:'none',
+					})
+					return
+				}
+				var index = this.exchangeName.lastIndexOf("(");
+				let JobNumber=""
+				JobNumber = this.exchangeName.substring(index+1,this.exchangeName.length-1);
+				let UserName=""
+				UserName=this.exchangeName.substring(0,index);
+				let params = {
+					acceptJobNumber: JobNumber,
+					acceptUserName:UserName,
+					parkingCode: this.parkingData.parkingLot,
+					validEndDate: this.parkingData.endDate,
+					validStartDate: this.parkingData.startDate
+				}
+				try{
+					const res= await applyExchange(params)
+					if (res.code==200) {
+						uni.showToast({
+							title: "申请成功",
+							icon:'none',
+						})
+						this.getExchangeArr()
+						this.getExchange()
+					} else{
+						uni.showToast({
+							title: res.msg,
+							icon:'none',
+						})
+					}
+				}catch(e){
+					//TODO handle the exception
+				}
+			},
+			//交换列表操作 同意 不同意 撤销
+			async ExchangeOperation(item,type){
+				console.log(item,"type");
+				if(type=='consent'){
+					console.log(1);
+					if(this.parkingData.parkingLot!=''){
+						console.log("调接口");
+						let params={
+							  acceptParkingCode: this.parkingData.parkingLot,
+							  id: item.id,
+							  state: "1",
+							  validEndDate: this.parkingData.endDate,
+							  validStartDate: this.parkingData.startDate
+						}
+						const res =await ExchangeDeal(params)
+						if (res.code==200) {
+							uni.showToast({
+								title: "交换成功",
+								icon:'none',
+							})
+							this.getuserlotList()
+							this.getExchangeArr()
+							this.getExchange()
+						} else{
+							uni.showToast({
+								title: res.msg,
+								icon:'none',
+							})
+						}
+					}else{
+						uni.showToast({
+							title: '请选择要交换的车位',
+							icon:'none',
+						})
+					}
+				}else {
 					let params={
-						acceptParkingCode: this.parkingData.parkingLot,
-						id: item.id,
-						state: "1",
-						validEndDate: this.parkingData.endDate,
-						validStartDate: this.parkingData.startDate
+						state:'',
+						id:item.id
+					}
+					let typeName=''
+					if(type=='disagree'){
+						console.log(2);
+						params.state='2'
+						typeName="否决"
+					}else if(type=='revocation'){
+						console.log(3);
+						params.state='3'
+						typeName="撤销"
 					}
 					const res =await ExchangeDeal(params)
 					if (res.code==200) {
 						uni.showToast({
-							title: "交换成功",
+							title: `${typeName}成功`,
 							icon:'none',
 						})
 						this.getuserlotList()
@@ -791,170 +827,134 @@ export default {
 							icon:'none',
 						})
 					}
-				}else{
-					uni.showToast({
-						title: '请选择要交换的车位',
-						icon:'none',
-					})
 				}
-			}else {
-				let params={
-					state:'',
-					id:item.id
-				}
-				let typeName=''
-				if(type=='disagree'){
-					console.log(2);
-					params.state='2'
-					typeName="否决"
-				}else if(type=='revocation'){
-					console.log(3);
-					params.state='3'
-					typeName="撤销"
-				}
-				const res =await ExchangeDeal(params)
-				if (res.code==200) {
-					uni.showToast({
-						title: `${typeName}成功`,
-						icon:'none',
-					})
-					this.getuserlotList()
-					this.getExchangeArr()
-					this.getExchange()
+			},
+			async getinfo(){
+				if (this.license!='') {
+					let params={
+						plateNo:this.license
+					}
+					const res= await getinfoByPlateNo(params)
+					console.log(res);
+					if(res.code==200){
+						this.userData=res.data
+						this.isUserMessageShow=true
+					}else{
+						uni.showToast({
+							title: res.msg,
+							icon:'none',
+						})
+					}
+
 				} else{
 					uni.showToast({
-						title: res.msg,
+						title: '请输入车牌号码',
 						icon:'none',
 					})
 				}
-			}
-		},
-		async getinfo(){
-			if (this.license!='') {
-				let params={
-					plateNo:this.license
-				}
-				const res= await getinfoByPlateNo(params)
+
+			},
+			//摇号记录查询
+			onLoadMore(){
+				console.log("触底");
+				this.lotteryPageData.pageNo++
+				this.getlotteryList()
+			},
+			//转移记录查询
+			onLoadMoreZy(){
+				console.log("触底");
+				this.transferPageData.pageNo++
+				this.getTransferList()
+			},
+			onLoadMoreJh(){
+				console.log("触底");
+				this.exchangePageData.pageNo++
+				this.getExchangeRecordList()
+			},
+			seletecp(){
+				console.log(this.zzcisShow);
+				console.log("点击了");
+				this.zzcisShow=true
+				console.log(this.zzcisShow);
+			},
+			popupClick(cphm){
+				console.log(cphm,"车牌");
+				this.popupActive=cphm
+			},
+			//选择交换车位
+			cutParking(item){
+				console.log(item,"item");
+				this.parkingData=item
+			},
+			//查询车位交换信息数量
+			async getExchange(){
+				const res=await getExchangeCount()
 				console.log(res);
-				if(res.code==200){
-					this.userData=res.data
-					this.isUserMessageShow=true
-				}else{
-					uni.showToast({
-						title: res.msg,
-						icon:'none',
-					})
-				}
-
-			} else{
-				uni.showToast({
-					title: '请输入车牌号码',
-					icon:'none',
-				})
+				this.exchangeCount = String(res.data)
+			},
+			//一键挪车弹框
+			showDrawer(e) {
+				this.$refs[e].open()
+			},
+			// 关闭窗口
+			closeDrawer(e) {
+				this.$refs[e].close()
+			},
+			// 抽屉状态发生变化触发
+			change(e, type) {
+				console.log((type === 'showLeft' ? '左窗口' : '右窗口') + (e ? '打开' : '关闭'));
+				this[type] = e
+			},
+			//显示添加车牌
+			addLicenseDialog() {
+				this.showLicenseDialog = true;
+			},
+			//取消添加车牌
+			cancelLicenseDialog() {
+				this.showLicenseDialog = false;
+			},
+			//添加车牌成功
+			okLicense(license) {
+				console.log(license);
+				this.license = license
+			},
+			//显示隐藏 规则
+			isIconShowClick(){
+				console.log("点击了");
+				console.log(this.isIconShow);
+				this.isIconShow=!this.isIconShow
+				console.log(this.isIconShow);
+			},
+			async getlotterInfo(){
+				const res=await getdescriptionInfo()
+				this.lotteryDescriptionInfo=res.data.description
 			}
-
 		},
-		//摇号记录查询
-		onLoadMore(){
-			console.log("触底");
-			this.lotteryPageData.pageNo++
+		onLoad() {
+			//获取人员列表
+			this.getnameList()
+			//获取摇号信息
+			this.getLotteryInfo()
+			//获取停车场信息列表
+			this.getparkingLot()
+			//获取摇号记录
 			this.getlotteryList()
-		},
-		//转移记录查询
-		onLoadMoreZy(){
-			console.log("触底");
-			this.transferPageData.pageNo++
+			//获取车牌号码列表
+			this.getseleteList()
+			//获取当前用户停车场信息
+			this.getuserlotList()
+			//查询转移记录
 			this.getTransferList()
-		},
-		onLoadMoreJh(){
-			console.log("触底");
-			this.exchangePageData.pageNo++
+			//查询车位交换数量
+			this.getExchange()
+			//交换列表查询
+			this.getExchangeArr()
+			//查询交换记录
 			this.getExchangeRecordList()
-		},
-		seletecp(){
-			console.log(this.zzcisShow);
-			console.log("点击了");
-			this.zzcisShow=true
-			console.log(this.zzcisShow);
-		},
-		popupClick(cphm){
-			console.log(cphm,"车牌");
-			this.popupActive=cphm
-		},
-		//选择交换车位
-		cutParking(item){
-			console.log(item,"item");
-			this.parkingData=item
-		},
-		//查询车位交换信息数量
-		async getExchange(){
-			const res=await getExchangeCount()
-			console.log(res);
-			this.exchangeCount = String(res.data)
-		},
-		//一键挪车弹框
-		showDrawer(e) {
-			this.$refs[e].open()
-		},
-		// 关闭窗口
-		closeDrawer(e) {
-			this.$refs[e].close()
-		},
-		// 抽屉状态发生变化触发
-		change(e, type) {
-			console.log((type === 'showLeft' ? '左窗口' : '右窗口') + (e ? '打开' : '关闭'));
-			this[type] = e
-		},
-		//显示添加车牌
-		addLicenseDialog() {
-			this.showLicenseDialog = true;
-		},
-		//取消添加车牌
-		cancelLicenseDialog() {
-			this.showLicenseDialog = false;
-		},
-		//添加车牌成功
-		okLicense(license) {
-			console.log(license);
-			this.license = license
-		},
-		//显示隐藏 规则
-		isIconShowClick(){
-			console.log("点击了");
-			console.log(this.isIconShow);
-			this.isIconShow=!this.isIconShow
-			console.log(this.isIconShow);
-		},
-		async getlotterInfo(){
-			const res=await getdescriptionInfo()
-			this.lotteryDescriptionInfo=res.data.description
+			//查询摇号规则
+			this.getlotterInfo()
 		}
-	},
-	onLoad() {
-		//获取人员列表
-		this.getnameList()
-		//获取摇号信息
-		this.getLotteryInfo()
-		//获取停车场信息列表
-		this.getparkingLot()
-		//获取摇号记录
-		this.getlotteryList()
-		//获取车牌号码列表
-		this.getseleteList()
-		//获取当前用户停车场信息
-		this.getuserlotList()
-		//查询转移记录
-		this.getTransferList()
-		//查询车位交换数量
-		this.getExchange()
-		//交换列表查询
-		this.getExchangeArr()
-		//查询交换记录
-		this.getExchangeRecordList()
-		//查询摇号规则
-		this.getlotterInfo()
 	}
-}
 </script>
 
 <style lang="scss">
@@ -973,97 +973,97 @@ export default {
 		left: 0;
 	}
 
-	.uni-drawer{
-		z-index:3 !important;
-	}
-	.conterBox{
-		padding: 20rpx;
-		.titleBox{
+		.uni-drawer{
+			z-index:3 !important;
+		}
+		.conterBox{
 			padding: 20rpx;
-			background: #FFFFFF;
-			box-shadow: 0rpx 4rpx 10rpx 0rpx rgba(0,0,0,0.08);
-			border-radius: 16rpx;
-			margin-top: 20rpx;
-			.title{
-				height: 60rpx;
-				display: flex;
-				justify-content: space-between;
-				align-items: center;
+			.titleBox{
 				padding: 20rpx;
-				.title-left{
+				background: #FFFFFF;
+				box-shadow: 0rpx 4rpx 10rpx 0rpx rgba(0,0,0,0.08);
+				border-radius: 16rpx;
+				margin-top: 20rpx;
+				.title{
+					height: 60rpx;
+					display: flex;
+					justify-content: space-between;
+					align-items: center;
+					padding: 20rpx;
+					.title-left{
+						display: flex;
+						justify-content: center;
+						align-items: center;
+						.icon-title{
+							width: 8rpx;
+							height: 32rpx;
+							background: #007AFF;
+						}
+						.text{
+							font-size: 32rpx;
+							font-weight: 600;
+							color: #000000;
+							margin-left: 10rpx;
+						}
+					}
+					.title-right{
+						font-size: 24rpx;
+						color: #007AFF;
+					}
+				}
+			}
+			.form{
+				display: flex;
+				justify-content: space-around;
+				.example-body{
+					width: 70%;
+					.copeInput{
+						border-radius: 8rpx;
+						height: 100%;
+						font-size: 20rpx;
+						padding: 10rpx;
+						box-sizing: border-box;
+						border: 1px solid #ccc;
+						display: flex;
+						align-items: center;
+					}
+
+				}
+				.but{
+					width: 152rpx;
+					height: 80rpx;
 					display: flex;
 					justify-content: center;
 					align-items: center;
-					.icon-title{
-						width: 8rpx;
-						height: 32rpx;
-						background: #007AFF;
-					}
-					.text{
-						font-size: 32rpx;
+					font-size: 32rpx;
+					font-weight: 600;
+					color: #FFFFFF;
+					background: #007AFF;
+					border-radius: 8rpx;
+				}
+			}
+			.message{
+				padding: 20rpx;
+				background: #EEF6FF;
+				border-radius: 8rpx;
+				margin-top: 20rpx;
+				.item{
+					line-height: 50rpx;
+					.name{
+						width: 25%;
+						font-size: 28rpx;
 						font-weight: 600;
 						color: #000000;
-						margin-left: 10rpx;
+						display: inline-block;
+					}
+					.value{
+						width: 70%;
+						font-size: 28rpx;
+						color: #000000;
 					}
 				}
-				.title-right{
-					font-size: 24rpx;
-					color: #007AFF;
-				}
 			}
 		}
-		.form{
-			display: flex;
-			justify-content: space-around;
-			.example-body{
-				width: 70%;
-				.copeInput{
-					border-radius: 8rpx;
-					height: 100%;
-					font-size: 20rpx;
-					padding: 10rpx;
-					box-sizing: border-box;
-					border: 1px solid #ccc;
-					display: flex;
-					align-items: center;
-				}
-
-			}
-			.but{
-				width: 152rpx;
-				height: 80rpx;
-				display: flex;
-				justify-content: center;
-				align-items: center;
-				font-size: 32rpx;
-				font-weight: 600;
-				color: #FFFFFF;
-				background: #007AFF;
-				border-radius: 8rpx;
-			}
-		}
-		.message{
-			padding: 20rpx;
-			background: #EEF6FF;
-			border-radius: 8rpx;
-			margin-top: 20rpx;
-			.item{
-				line-height: 50rpx;
-				.name{
-					width: 25%;
-					font-size: 28rpx;
-					font-weight: 600;
-					color: #000000;
-					display: inline-block;
-				}
-				.value{
-					width: 70%;
-					font-size: 28rpx;
-					color: #000000;
-				}
-			}
-		}
-	}
 	// }
 }
 .lotteryManagementBox{
@@ -1076,70 +1076,70 @@ export default {
 	.parkingLotBox{
 		margin-top: 9px;
 		overflow: auto;
-		.scroll-view_H {
-			white-space: nowrap;
-			// width: 100%;
-			overflow-x: scroll;
-			.scroll-view-item_H {
-				width: 616rpx;
-				height: 200rpx;
-				display: inline-block;
-				background: #FFFFFF;
-				box-shadow: 0rpx 4rpx 8rpx 0rpx rgba(217,217,217,0.5);
-				border-radius: 16rpx;
-				padding: 14rpx;
-				margin-right: 20rpx;
-				overflow: hidden;
-				.itemBox{
-					display: flex;
-					justify-content: space-between;
-					align-items: center;
-					height: 100%;
-					.imgBox{
-						width: 258rpx;
+			.scroll-view_H {
+				white-space: nowrap;
+				// width: 100%;
+				 overflow-x: scroll;
+				.scroll-view-item_H {
+					width: 616rpx;
+					height: 200rpx;
+					display: inline-block;
+					background: #FFFFFF;
+					box-shadow: 0rpx 4rpx 8rpx 0rpx rgba(217,217,217,0.5);
+					border-radius: 16rpx;
+					padding: 14rpx;
+					margin-right: 20rpx;
+					overflow: hidden;
+					.itemBox{
+						display: flex;
+						justify-content: space-between;
+						align-items: center;
 						height: 100%;
-						border: 1px solid #ccc;
-						.swiper{
+						.imgBox{
+							width: 258rpx;
 							height: 100%;
-							.scroll_img{
-								width: 100%;
+							border: 1px solid #ccc;
+							.swiper{
 								height: 100%;
+								.scroll_img{
+									width: 100%;
+									height: 100%;
+								}
+							}
+							.qsIcon{
+
+								height: 100%;
+								display: flex;
+								justify-content: center;
+								align-items: center;
 							}
 						}
-						.qsIcon{
-
+						.message{
+							width: 320rpx;
 							height: 100%;
-							display: flex;
-							justify-content: center;
-							align-items: center;
-						}
-					}
-					.message{
-						width: 320rpx;
-						height: 100%;
-						overflow-y: scroll;
-						.title{
-							font-size: 32rpx;
-							font-weight: bold;
-						}
-						.particulars{
-							margin-top: 26rpx;
-							font-size: 26rpx;
-							.text{
-								display: -webkit-box;
-								// -webkit-box-orient: vertical;
-								// -webkit-line-clamp: 2;
-								// overflow: hidden;
-								line-height: 34rpx;
-								margin-top: 10rpx;
-								font-weight: 600;
+							overflow-y: scroll;
+							.title{
+								font-size: 32rpx;
+								font-weight: bold;
+							}
+							.particulars{
+								margin-top: 26rpx;
+								font-size: 26rpx;
+								.text{
+									 display: -webkit-box;
+									// -webkit-box-orient: vertical;
+									// -webkit-line-clamp: 2;
+									// overflow: hidden;
+									line-height: 34rpx;
+									margin-top: 10rpx;
+									font-weight: 600;
+								}
 							}
 						}
 					}
-				}
 
+				}
 			}
-		}
 	}
 	.centerBox{
 		width: 718rpx;
@@ -1157,9 +1157,9 @@ export default {
 				display: flex;
 				align-items: center;
 				.cl_logo{
-					width: 46rpx;
-					height: 36rpx;
-					margin-top: 15rpx;
+				width: 46rpx;
+				height: 36rpx;
+				margin-top: 15rpx;
 				}
 				.name{
 					font-size: 34rpx;
@@ -1282,26 +1282,17 @@ export default {
 				padding: 12rpx;
 				.item{
 					line-height: 50rpx;
-					display: flex;
 					.name{
-						flex: 1;
+						width: 25%;
 						font-size: 28rpx;
 						font-weight: 600;
 						color: #000000;
 						display: inline-block;
 					}
 					.value{
-						flex: 3;
+						width: 70%;
 						font-size: 28rpx;
 						color: #000000;
-					}
-					.value-once{
-						flex: 3;
-						font-size: 28rpx;
-						color: #000000;
-						overflow: hidden;
-						text-overflow: ellipsis;
-						white-space: nowrap;
 					}
 					.gren{
 						color: #00B8D3;
@@ -1572,20 +1563,20 @@ export default {
 		}
 	}
 	@keyframes Entrance {
-		0% {
-			transform: translateY(-100%);
-		}
-		100% {
-			transform: translateY(0);
-		}
+	  0% {
+	    transform: translateY(-100%);
+	  }
+	  100% {
+	    transform: translateY(0);
+	  }
 	}
 	@keyframes departure {
-		0% {
-			transform: translateY(0);
-		}
-		100% {
-			transform: translateY(-100%);
-		}
+	  0% {
+		transform: translateY(0);
+	  }
+	  100% {
+	     transform: translateY(-100%);
+	  }
 	}
 }
 .tkBox{
