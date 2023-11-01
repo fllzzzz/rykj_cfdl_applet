@@ -50,9 +50,6 @@
 						<text class="name">{{popupActive}}</text>
 					</view>
 					<view class="title-right">
-						<view class="search" @click="showDrawer('showLeft')">
-							<uni-icons type="search" size="20" color="#FFFFFF"></uni-icons>
-						</view>
 						<view class="clgl"  @click="handleNavigateTo('vehicleEntry')">
 							<text class="name">车辆管理</text>
 							<uni-icons class="icon" type="right" color="#FFFFFF" size="14"></uni-icons>
@@ -63,8 +60,9 @@
 				<view class="tabControl">
 					<view class="tabs bck">
 						<view @click="tabActive(0)" :class="active == 0?'tab active':'tab'">车位摇号</view>
+						<view @click="tabActive(2)" :class="active == 2?'tab active':'tab'">车位交换</view>
 						<view @click="tabActive(1)" :class="active == 1?'tab active':'tab'">权限转移</view>
-						<view @click="tabActive(2)" :class="active == 2?'tab active':'tab'">车位交换 <uni-badge class="uni-badge-left-margin" :text="exchangeCount" v-if="exchangeCount!='0'"  /></view>
+						<view @click="tabActive(3)" :class="active == 3?'tab active':'tab'">挪车查询 <uni-badge class="uni-badge-left-margin" :text="exchangeCount" v-if="exchangeCount!='0'"  /></view>
 					</view>
 					<view class="lotteryBox" v-if="active==0">
 						<view v-if="lotteryData.timeState">
@@ -87,6 +85,10 @@
 							<view class="item">
 								<text class="name">时间报名</text>
 								<text class="value">{{lotteryData.applyStartTime}} - {{lotteryData.applyEndTime}}</text>
+							</view>
+							<view class="item">
+								<text class="name">摇号车位</text>
+								<text class="value">{{lotteryData.parkingLotName}}</text>
 							</view>
 							<view class="item">
 								<text class="name">摇号状态</text>
@@ -328,6 +330,46 @@
 					</scroll-view>
 				</view>
 			</view>
+			<view class="transferGuide" v-if="active==3">
+				<view class="conterBox">
+					<view class="titleBox">
+						<view class="title">
+							<view class="title-left">
+								<view class="icon-title"></view>
+								<view class="text">挪车查询</view>
+							</view>
+						</view>
+						<view class="form">
+							<view class="example-body">
+								<!-- <input v-model="license" @click="addLicenseDialog" class="u-input" placeholder="请输入车牌号" /> -->
+								<view class="copeInput" @click="addLicenseDialog">
+									{{license||'请输入车牌号'}}
+								</view>
+							</view>
+							<view>
+								<button class="but" @click="getinfo">
+									查询
+								</button>
+							</view>
+						</view>
+						<view class="message bck" v-if="isUserMessageShow">
+							<view class="item">
+								<text class="name">车主名称</text>
+								<text class="value">{{userData.name}}</text>
+							</view>
+							<view class="item">
+								<text class="name">车主工号</text>
+								<text class="value">{{userData.jobNumber}}</text>
+							</view>
+							<view class="item">
+								<text class="name">车主电话</text>
+								<text class="value">{{userData.mobile}}</text>
+							</view>
+						</view>
+					</view>
+
+				</view>
+			</view>
 		</view>
 		<uni-drawer class="drawerBox" ref="showLeft" mode="left" :width="320" @change="change($event,'showLeft')">
 			<view class="conterBox">
@@ -525,8 +567,10 @@ export default {
 		async getLotteryInfo(){
 			const res = await lotteryInfo()
 			console.log(res);
-			this.lotteryData=res.data
-			this.countDownFun(this.lotteryData.applyEndTime)
+			this.lotteryData=res.data;
+			this.lotteryData.applyEndTime = this.lotteryData.applyEndTime && this.lotteryData.applyEndTime.length > 10 ? this.lotteryData.applyEndTime.substring(0,10) : this.lotteryData.applyEndTime;
+			this.lotteryData.applyStartTime = this.lotteryData.applyStartTime && this.lotteryData.applyStartTime.length > 10 ? this.lotteryData.applyStartTime.substring(0,10) : this.lotteryData.applyStartTime;
+			this.countDownFun(this.lotteryData.applyEndTime);
 		},
 		//获取停车场信息
 		async getparkingLot(){
@@ -930,7 +974,8 @@ export default {
 			this.lotteryDescriptionInfo=res.data.description
 		}
 	},
-	onLoad() {
+	onLoad(query) {
+		this.active = query.page ? query.page : 0
 		//获取人员列表
 		this.getnameList()
 		//获取摇号信息
@@ -1228,7 +1273,7 @@ export default {
 				justify-content: space-around;
 				align-items: center;
 				.tab{
-					width: 214rpx;
+					width: 25%;
 					height: 64rpx;
 					border-radius: 8rpx;
 					display: flex;
