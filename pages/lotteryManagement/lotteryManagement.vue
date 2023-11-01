@@ -568,9 +568,9 @@ export default {
 			const res = await lotteryInfo()
 			console.log(res);
 			this.lotteryData=res.data;
+			this.countDownFun(new Date(this.lotteryData.applyEndTime));
 			this.lotteryData.applyEndTime = this.lotteryData.applyEndTime && this.lotteryData.applyEndTime.length > 10 ? this.lotteryData.applyEndTime.substring(0,10) : this.lotteryData.applyEndTime;
 			this.lotteryData.applyStartTime = this.lotteryData.applyStartTime && this.lotteryData.applyStartTime.length > 10 ? this.lotteryData.applyStartTime.substring(0,10) : this.lotteryData.applyStartTime;
-			this.countDownFun(this.lotteryData.applyEndTime);
 		},
 		//获取停车场信息
 		async getparkingLot(){
@@ -581,7 +581,7 @@ export default {
 		//根据日期计算时分秒
 		countDownFun(time) {
 			let now = new Date();
-			let endDate = new Date(time);
+			let endDate = time;
 			let leftTime = endDate.getTime() - now.getTime(); //计算剩余的毫秒数
 			if (leftTime <= 0) {
 				leftTime = 0;
