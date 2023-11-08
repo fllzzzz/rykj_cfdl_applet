@@ -104,8 +104,8 @@
 							</view>
 						</view>
 						<view class="message bck">
+							<view class="rule-title"><text>摇号规则</text></view>
 							<view class="item">
-								<text class="name">摇号规则</text>
 								<text :class="isIconShow?'value':'value-once'">{{lotteryDescriptionInfo||'暂无规则'}}</text>
 							</view>
 						</view>
@@ -1325,6 +1325,14 @@ export default {
 			.message{
 				margin-top: 30rpx;
 				padding: 12rpx;
+				.rule-title {
+					text-align: center;
+					font-size: 32rpx;
+					line-height: 60rpx;
+					color: #000000;
+					font-family: PingFangSC-Medium, PingFang SC;
+					font-weight: bold;
+				}
 				.item{
 					line-height: 50rpx;
 					display: flex;
