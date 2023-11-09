@@ -61,8 +61,8 @@
 					<view class="tabs bck">
 						<view @click="tabActive(0)" :class="active == 0?'tab active':'tab'">车位摇号</view>
 						<view @click="tabActive(2)" :class="active == 2?'tab active':'tab'">车位交换</view>
-						<view @click="tabActive(1)" :class="active == 1?'tab active':'tab'">权限转移</view>
-						<view @click="tabActive(3)" :class="active == 3?'tab active':'tab'">挪车查询 <uni-badge class="uni-badge-left-margin" :text="exchangeCount" v-if="exchangeCount!='0'"  /></view>
+						<view @click="tabActive(1)" :class="active == 1?'tab active':'tab'">权限转移<view class="uni-badge-left-margin"><uni-badge class="uni-badge-left-margin" :text="exchangeCount" v-if="exchangeCount!='0'"  /></view></view>
+						<view @click="tabActive(3)" :class="active == 3?'tab active':'tab'">挪车查询</view>
 					</view>
 					<view class="lotteryBox" v-if="active==0">
 						<view v-if="lotteryData.timeState">
@@ -582,6 +582,7 @@ export default {
 		countDownFun(time) {
 			let now = new Date();
 			let endDate = time;
+			console.log('now', now, endDate)
 			let leftTime = endDate.getTime() - now.getTime(); //计算剩余的毫秒数
 			if (leftTime <= 0) {
 				leftTime = 0;
@@ -598,6 +599,7 @@ export default {
 				minute,
 				second
 			}
+			console.log('this.countDown', this.countDown)
 
 		},
 		//立即报名
@@ -618,21 +620,33 @@ export default {
 
 		},
 		//取消报名
-		async lotteryCancelClick(){
-			console.log("取消申请");
-			try{
-				const res = await lotteryCancel({batchId:this.lotteryData.batchId})
-				if(res.code==200){
-					this.lotteryData.applyState=false
-					uni.showToast({
-						title: "取消成功",
-						icon:'none',
-					})
+		lotteryCancelClick(){
+			let _this = this
+			uni.showModal({
+				title: '提示',
+				content: '是否确认取消申请?',
+				cancelText: '取消',
+				confirmText: '确定',
+				success: function(res) {
+					if (res.confirm) {
+						console.log('用户点击确定');
+						_this.lotteryCancelFun()
+					} else if (res.cancel) {
+						console.log('用户点击取消');
+					}
 				}
-			}catch(e){
-
+			});
+		},
+		async lotteryCancelFun(){
+			console.log("取消申请");
+			const res = await lotteryCancel({batchId:this.lotteryData.batchId})
+			if(res.code==200){
+				this.lotteryData.applyState=false
+				uni.showToast({
+					title: "取消成功",
+					icon:'none',
+				})
 			}
-
 		},
 		//摇号记录查询
 		async getlotteryList(){
