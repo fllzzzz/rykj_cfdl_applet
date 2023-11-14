@@ -60,8 +60,8 @@
 				<view class="tabControl">
 					<view class="tabs bck">
 						<view @click="tabActive(0)" :class="active == 0?'tab active':'tab'">车位摇号</view>
-						<view @click="tabActive(2)" :class="active == 2?'tab active':'tab'">车位交换</view>
-						<view @click="tabActive(1)" :class="active == 1?'tab active':'tab'">权限转移<view class="uni-badge-left-margin"><uni-badge class="uni-badge-left-margin" :text="exchangeCount" v-if="exchangeCount!='0'"  /></view></view>
+						<view @click="tabActive(2)" :class="active == 2?'tab active':'tab'">车位交换<view class="uni-badge-left-margin"><uni-badge class="uni-badge-left-margin" :text="exchangeCount" v-if="exchangeCount!='0'"  /></view></view>
+						<view @click="tabActive(1)" :class="active == 1?'tab active':'tab'">权限转移</view>
 						<view @click="tabActive(3)" :class="active == 3?'tab active':'tab'">挪车查询</view>
 					</view>
 					<view class="lotteryBox" v-if="active==0">
@@ -198,7 +198,7 @@
 					</view>
 					<view class="form">
 						<view class="example-body">
-							<uni-combox :candidates="candidates" placeholder="请选择转移人" v-model="transferName"></uni-combox>
+							<uni-combox @input="inputValue" :candidates="dataList" placeholder="请选择转移人" v-model="transferName"></uni-combox>
 						</view>
 						<view>
 							<button class="but" @click="parkingTransfer">
@@ -252,7 +252,7 @@
 					</view>
 					<view class="form" v-if="ApplyExchangeList.length==0">
 						<view class="example-body">
-							<uni-combox :candidates="candidates" placeholder="请选择交换人" v-model="exchangeName"></uni-combox>
+							<uni-combox @input="inputValue" :candidates="dataList" placeholder="请选择交换人" v-model="exchangeName"></uni-combox>
 						</view>
 						<view>
 							<button class="but" @click="ImmediateExchange">
@@ -447,6 +447,7 @@ export default {
 			isjhShow:false,
 			// 获取人员列表
 			candidates:[],
+			dataList: [],
 			//选择转赠用户
 			userName:'',
 			//摇号信息
@@ -552,6 +553,13 @@ export default {
 					let string=`${item.name}(${item.code})`
 					this.candidates.push(string)
 				})
+			}
+		},
+		inputValue(data) {
+			if (data) {
+				this.dataList = JSON.parse(JSON.stringify(this.candidates))
+			} else {
+				this.dataList = []
 			}
 		},
 		//点击放大图片
