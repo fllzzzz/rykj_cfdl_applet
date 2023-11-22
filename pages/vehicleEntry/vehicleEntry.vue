@@ -263,7 +263,8 @@ export default {
 		selectChange(event,name){
 			console.log(event);
 			uni.showLoading({
-				title: '加载中'
+				title: '上传中',
+				mask: true
 			})
 			uni.uploadFile({
 				url: `${baseUrl}/user/verify/imageUpload`,
@@ -304,10 +305,13 @@ export default {
 				},
 				fail(res) {
 					uni.hideLoading()
+					uni.showToast({
+						title: '上传失败',
+						icon:'none',
+					})
 					console.log("事故：", res)
 				},
 				complete(res) {
-					uni.hideLoading()
 					console.log("complete：", res)
 				}
 			});
