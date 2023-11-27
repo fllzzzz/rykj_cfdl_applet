@@ -3,6 +3,10 @@ import request from '@/config/request.js'
 export const lotteryInfo =(data)=>{
 	return request('/lottery/applyRecord/info', 'POST', data)
 }
+//查看是否审核通过
+export const checkAuditCar =()=>{
+	return request('/user/verify/checkAuditCar', 'GET')
+}
 //申请摇号
 export const lotteryApply =(data)=>{
 	return request('/lottery/applyRecord/apply', 'POST', data)

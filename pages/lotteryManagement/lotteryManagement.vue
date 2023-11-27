@@ -66,8 +66,8 @@
 					</view>
 					<view class="lotteryBox" v-if="active==0">
 						<view v-if="lotteryData.timeState">
-							<button v-if="!lotteryData.applyState" :disabled="!cphList.length>0" :class="!cphList.length>0?'btn disabledColor':'btn'" type="primary" @click="lotterySubmit" >立即报名</button>
-							<button v-else :class="!cphList.length>0?'btn disabledColor':'btn'" type="primary" :disabled="!cphList.length>0" @click="lotteryCancelClick">取消申请</button>
+							<button v-if="!lotteryData.applyState && canSupply" :disabled="!cphList.length>0" :class="!cphList.length>0?'btn disabledColor':'btn'" type="primary" @click="lotterySubmit" >立即报名</button>
+							<button v-if="lotteryData.applyState" :class="!cphList.length>0?'btn disabledColor':'btn'" type="primary" :disabled="!cphList.length>0" @click="lotteryCancelClick">取消申请</button>
 							<view class="time bck" >
 								<text class="text">距报名结束还有</text>
 								<uni-countdown :show-colon="false" :font-size="16" :day="countDown.day" :hour="countDown.hour" :minute="countDown.minute" :second="countDown.second" color="#FFFFFF" background-color="#007AFF" />
@@ -418,6 +418,7 @@
 import {
 	getUserList,
 	lotteryInfo,
+	checkAuditCar,
 	lotteryApply,
 	getparkingLotList,
 	getApplyRecordList,
@@ -441,6 +442,7 @@ export default {
 			old: {
 				scrollTop: 0
 			},
+			canSupply: false,
 			active:0,
 			isShow:false,
 			iszyShow:false,
@@ -546,6 +548,11 @@ export default {
 		isjhShowClick(){
 			this.isjhShow=!this.isjhShow
 		},
+		async getCheckAuditCar() {
+			const res=await checkAuditCar()
+			console.log('getCheckAuditCar', res)
+			this.canSupply = res.data
+		},
 		async getnameList(){
 			const res=await getUserList()
 			if (res.code==200) {
@@ -619,6 +626,11 @@ export default {
 					this.lotteryData.applyState=true
 					uni.showToast({
 						title: "申请成功",
+						icon:'none',
+					})
+				} else {
+					uni.showToast({
+						title: res.msg,
 						icon:'none',
 					})
 				}
@@ -998,6 +1010,8 @@ export default {
 	},
 	onLoad(query) {
 		this.active = query.page ? query.page : 0
+		//查看是否审核通过
+		this.getCheckAuditCar()
 		//获取人员列表
 		this.getnameList()
 		//获取摇号信息
